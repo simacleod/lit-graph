@@ -39,7 +39,6 @@ export class LitGraph {
   node<T>(id: string, Ctor: new()=>T): T {
     if (this.nodes.has(id)) throw new Error(`Node id '${id}' exists`);
     const inst = new Ctor();
-    initHeadlessNode(inst, Ctor, id, () => this.logLevel);
     this.nodes.set(id, inst);
     return inst;
   }

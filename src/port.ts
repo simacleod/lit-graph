@@ -1,6 +1,7 @@
 import { LitElement } from 'lit';
 import { signal, Signal } from '@lit-labs/signals';
-import {installElementLogger} from './log'
+import { installElementLogger } from './log';
+
 
 export class Inport<T> {
   constructor(public name: string, public state: Signal.State<T>) {}
@@ -9,7 +10,20 @@ export class Inport<T> {
 
 export function inport() {
   return function (prototype: any, propName: string) {
+    // Ensure a ports mapping exists on the prototype
+    if (!prototype.ports) {
+      Object.defineProperty(prototype, 'ports', {
+        value: { inports: {}, outports: {} },
+        writable: true,
+        enumerable: false,
+      });
+    }
+    // Register this property as an inport
+
+
     const state = signal(undefined as unknown) as Signal.State<any>;
+
+    prototype.ports.inports[propName] = state;
 
     const originalSet = state.set;
     state.set = (v: any) => {
@@ -33,7 +47,6 @@ export function inport() {
   };
 }
 
-
 export class Outport<T> {
   private targets: Signal.State<T>[] = [];
   public value?: T;
@@ -53,15 +66,25 @@ export class Outport<T> {
 
 export function outport() {
   return function (prototype: any, propName: string) {
-
-      const initial = prototype[propName];
-      const st = signal(initial) as Signal.State<any>;
-      const port = new Outport(propName);
-      Object.defineProperty(prototype, propName, {
-        get: () => port,
-        set: (val) => port.send(val),
-        enumerable: true,
+    // Ensure a ports mapping exists on the prototype
+    if (!prototype.ports) {
+      Object.defineProperty(prototype, 'ports', {
+        value: { inports: {}, outports: {} } as Ports,
+        writable: true,
+        enumerable: false,
       });
+    }
+    // Register this property as an outport
 
+    const initial = (prototype as any)[propName];
+    const st = signal(initial) as Signal.State<any>;
+    const port = new Outport(propName);
+    prototype.ports.outports[propName] = port;
+
+    Object.defineProperty(prototype, propName, {
+      get: () => port,
+      set: (val: any) => port.send(val),
+      enumerable: true,
+    });
   };
 }

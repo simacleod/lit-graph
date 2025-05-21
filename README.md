@@ -52,6 +52,10 @@ export class MyButton extends LitElement {
 export class MyIndicator extends LitElement {
   @inport() flash = false;
 
+  nodeExecutor(flash) {
+    this.log.info('indicator flashing!')
+  }
+
   render() {
     return html`<div style="background: ${this.flash ? 'yellow' : 'gray'}">
       Indicator
@@ -89,9 +93,12 @@ Defines an output port with a `.send(value)` method. When called, it pushes the 
 
 ### `@node`
 
-Marks a class (element or headless) as a node with ports. Headless nodes also support the optional `exec(...)` method for reactive transforms.
+Marks a class (element or headless) as a node with ports. Nodes also support the optional `nodeExecutor()` method for reactive transforms.
 
----
+### `nodeExecutor()`
+This function will execute any time an inport is updated. Defining this function inside an element decorated with @node will add custom reactive behavior to the element. This is also true for "headless" nodes, nodes which are not elements.
+
+
 
 ## 🔌 createContext
 
@@ -113,7 +120,7 @@ The default, global instance is exported as `litgraph`. This instance is used to
 
 Headless nodes are plain JavaScript classes (not custom elements) that are registered directly with a `LitGraph` instance using `.node(id, Ctor)`.
 
-They support full reactive behavior: their `@inport` values are tracked, and whenever any input changes, the node is notified via an optional `exec(...inputs, ...outports)` method.
+They support full reactive behavior: their `@inport` values are tracked, and whenever any input changes, the node is notified via nodeExecutor(...inports,...outports) method. Arguments appear in order they were declared in the node.
 
 ```ts
 @node
@@ -128,7 +135,6 @@ class Adder {
 }
 ```
 
-`exec()` is only invoked automatically on headless nodes created via `graph.node(...)`. It is not triggered on DOM elements.
 
 ---
 
