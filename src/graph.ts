@@ -1,4 +1,3 @@
-import {initHeadlessNode} from './node'
 import {Outport, Inport} from './port'
 import {setLogLevel} from './log'
 import { Signal } from '@lit-labs/signals';
@@ -7,17 +6,15 @@ import { Signal } from '@lit-labs/signals';
 export class LitGraph {
   private nodes = new Map<string, any>();
   private logLevel: 'debug'|'info'|'warn'|'error' = 'info';
-  public root: Document|Element|object;
+  public root: Document|Element|ShadowRoot|undefined;
 
-  constructor(root?: Document | Element) {
-    if (root?.shadowRoot) {
+  constructor(root?: Document | Element | ShadowRoot |undefined) {
+    if (root instanceof Element && root.shadowRoot) {
       this.root = root.shadowRoot;
-    } else if (root) {
-      this.root = root;
     } else if (typeof document !== 'undefined') {
       this.root = document;
     } else {
-      this.root = {};
+      this.root = root;
     }
 
     Object.defineProperty(this.root, '__litgraph', {
@@ -53,7 +50,7 @@ export class LitGraph {
     if (byId) results.push(byId);
   
     if (results.length === 0 && typeof (this.root as any).querySelectorAll === 'function') {
-      this.root.querySelectorAll(sel)?.forEach((el: any) => results.push(el));
+      this.root?.querySelectorAll(sel)?.forEach((el: any) => results.push(el));
     }
   
     return results;
@@ -114,4 +111,4 @@ export class LitGraph {
 
 export const litgraph = new LitGraph();
 export function createContext(root?: Element) {
-  return new LitGraph(root);
+  return new LitGraph(root);}

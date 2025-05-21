@@ -22,28 +22,24 @@ export function node<T extends new (...args: any[]) => any>(Ctor: T): T {
   return SignalWatcher(Wrapped as any) as T;
 }
 
-
 export function initNodeExecutor(instance: any, ctor: Function) {
   const ports = instance.ports;
   if (!ports) return;
-  const inStates = Object.values(ports.inports);
-  const outports = Object.values(ports.outports);
 
-  // skip if no executor defined
+  const inStates = Object.values(ports.inports) as Signal.State<any>[];
+  const outports = Object.values(ports.outports) as Outport<any>[];
+
   const execFn = instance.nodeExecutor;
-  if (typeof execFn !== 'function') {
-    return;
-  }
+  if (typeof execFn !== 'function') return;
 
   const watcher = new Signal.subtle.Watcher(() => {
     Promise.resolve().then(async () => {
-      const args = inStates.map(s => s.get());
+      const args = inStates.map((s: Signal.State<any>) => s.get());
       instance.log.debug('Inputs changed:', args);
-      // safe apply
       await execFn.apply(instance, [...args, ...outports]);
-      inStates.forEach(s => watcher.watch(s));
+      inStates.forEach((s: Signal.State<any>) => watcher.watch(s));
     });
   });
 
-  inStates.forEach(s => watcher.watch(s));
+  inStates.forEach((s: Signal.State<any>) => watcher.watch(s));
 }

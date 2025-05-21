@@ -69,7 +69,7 @@ export function outport() {
     // Ensure a ports mapping exists on the prototype
     if (!prototype.ports) {
       Object.defineProperty(prototype, 'ports', {
-        value: { inports: {}, outports: {} } as Ports,
+        value: { inports: {}, outports: {} },
         writable: true,
         enumerable: false,
       });
