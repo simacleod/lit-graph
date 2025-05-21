@@ -1,0 +1,48 @@
+{
+  "name": "lit-graph",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "A Lit module for declarative, type-safe reactive port wiring between components",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "test": "uvu --files \"test/**/*.ts\"",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "lit",
+    "web-components",
+    "reactivity",
+    "graph",
+    "signals"
+  ],
+  "author": "Your Name <you@example.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "@lit-labs/signals": "^1.0.0",
+    "lit": "^2.0.0"
+  },
+  "devDependencies": {
+    "@lit-labs/signals": "^0.1.2",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "reflect-metadata": "^0.1.14",
+    "rollup": "^3.29.5",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "uvu": "^0.5.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "tslib": "^2.8.1"
+  }
+}
